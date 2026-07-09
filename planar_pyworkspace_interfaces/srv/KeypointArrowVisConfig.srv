@@ -1,0 +1,5 @@
+int32 tail_keypoint_id 
+int32 head_keypoint_id 
+float64 confidence_threshold
+---
+bool success 

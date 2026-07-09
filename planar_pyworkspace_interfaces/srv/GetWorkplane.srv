@@ -1,0 +1,7 @@
+---
+std_msgs/Header header
+float64[4] plane_normal
+float64[2] limits_x
+float64[2] limits_y
+float64[2] limits_z
+bool success 
