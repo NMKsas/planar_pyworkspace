@@ -14,12 +14,3 @@ ARUCO_CORNERS_CSV_FILE = 'aruco_corners_mean.csv'
 VISUAL_CORNERS_CSV_FILE = 'visual_corners.csv'
 
 DEFAULT_CSV = ARUCO_CORNERS_CSV_FILE
-
-YOLO11_KEYPOINT_NAMES = ['nose', 
-                         'l_eye', 'r_eye', 'l_ear', 'r_ear', 'l_sho', 'r_sho', 
-                         'l_elb', 'r_elb', 'l_wri', 'r_wri', 'l_hip', 'r_hip', 
-                         'l_knee', 'r_knee', 'l_ank', 'r_ank']
-
-FILTERED_KEYPOINT_DICT = {'l_sho' : 0, 'r_sho' : 1, 
-                          'l_elb' : 2, 'r_elb' : 3,
-                          'l_wri' : 4, 'r_wri' : 5}
