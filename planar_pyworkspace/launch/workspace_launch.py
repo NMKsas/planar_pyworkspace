@@ -1,5 +1,6 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
+from launch.actions import TimerAction
 
 def generate_launch_description():
     return LaunchDescription([
@@ -13,9 +14,14 @@ def generate_launch_description():
             executable='visualizer_node',
             name='visualizer'
         ),
-        Node(
-            package='planar_pyworkspace',
-            executable='workspace_node',
-            name='workspace'
+        TimerAction(
+            period=1.0, # a second delay to make sure visualization node is ready 
+            actions=[
+                Node(
+                    package='planar_pyworkspace',
+                    executable='workspace_node',
+                    name='workspace'
+                )
+            ]
         )
     ])
