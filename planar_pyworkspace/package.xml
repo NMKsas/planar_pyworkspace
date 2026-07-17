@@ -9,9 +9,12 @@
 
   <exec_depend>rclpy</exec_depend>
   <exec_depend>ros2launch</exec_depend>
+  <!-- Marker packages, exclude if not used -->
   <exec_depend>aruco_ros</exec_depend>
+  <exec_depend>apriltag_ros</exec_depend>
 
-  <!--exec_depend>planar_pyworkspace_interfaces</exec_depend-->
+  <!-- Visualization dependencies, exclude if not used -->
+  <exec_depend>planar_pyworkspace_interfaces</exec_depend>
   <exec_depend>pose_detection_interfaces</exec_depend>
 
   <test_depend>ament_copyright</test_depend>

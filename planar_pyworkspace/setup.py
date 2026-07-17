@@ -31,6 +31,7 @@ setup(
         'console_scripts': [
             'planar_pyworkspace_node = planar_pyworkspace.planar_pyworkspace_node:main',
             'aruco_pose_collector = planar_pyworkspace.aruco_pose_collector_node:main',
+            'apriltag_pose_collector = planar_pyworkspace.apriltag_pose_collector_node:main',
             'visual_pose_collector = planar_pyworkspace.visual_pose_collector_node:main',
             'workspace_node = planar_pyworkspace.planar_workspace_node:main',
             'broadcaster_node = planar_pyworkspace.frame_broadcaster:main',
