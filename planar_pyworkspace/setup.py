@@ -35,6 +35,7 @@ setup(
             'visual_pose_collector = planar_pyworkspace.visual_pose_collector_node:main',
             'workspace_node = planar_pyworkspace.planar_workspace_node:main',
             'broadcaster_node = planar_pyworkspace.frame_broadcaster:main',
+            'pupil_broadcaster_node = planar_pyworkspace.pupil_tf_broadcaster:main',
             'visualizer_node = planar_pyworkspace.visualizer_node:main',
         ],
     },

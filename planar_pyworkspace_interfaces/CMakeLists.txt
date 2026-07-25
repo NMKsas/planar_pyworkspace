@@ -19,6 +19,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/GestureVisConfig.srv"
   "srv/GetWorkplane.srv"
   "srv/KeypointArrowVisConfig.srv"
+  "srv/PublishPupilTf.srv"
   "srv/PublishWorkplaneTf.srv"
   "srv/WorkplaneVisConfig.srv"
   DEPENDENCIES geometry_msgs std_msgs

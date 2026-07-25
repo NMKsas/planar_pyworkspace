@@ -1,0 +1,5 @@
+int16 offset_mm
+int16 deg_rot_about_z
+string parent_frame
+---
+bool success
