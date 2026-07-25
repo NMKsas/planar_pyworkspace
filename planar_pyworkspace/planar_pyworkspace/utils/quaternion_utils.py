@@ -51,6 +51,46 @@ def quaternion_from_axis_angle(r_axis : np.array, r_angle : np.array) -> list:
     return [x,y,z,w]
 
 
+
+def get_x_unit_vector(q : list[float]) -> np.array:
+    """
+    x-unit vector from a quaternion (x,y,z,w)
+
+    Returns:
+        np.array: Normalized unit vector
+    """
+    x,y,z,w = q
+    x_unit = np.array([1-2*(y**2+z**2),
+                      2*(x*y+w*z),
+                      2*(x*z-w*y)])
+    return normalize(x_unit)
+
+def get_y_unit_vector(q : list[float]) -> np.array:
+    """
+    y-unit vector from a quaternion (x,y,z,w)
+    
+    Returns:
+        np.array: Normalized unit vector
+    """
+    x,y,z,w = q
+    y_unit = np.array([2*(x*y-w*z),
+                       1-2*(x**2+z**2),
+                       2*(y*z+w*x)])
+    return normalize(y_unit)
+
+def get_z_unit_vector(q : list[float]) -> np.array: 
+    """
+    z-unit vector from a quaternion (x,y,z,w)
+    
+    Returns:
+        np.array: Normalized unit vector
+    """
+    x,y,z,w = q
+    z_unit = np.array([2*(x*z+w*y),
+                      2*(y*z-w*x),
+                      1-2*(x**2+y**2)])
+    return normalize(z_unit)
+
 def get_workplane_orientation(n : np.array, p : list) -> list: 
     """
     Get quaternion for the given normal and plane points, i.e., 
@@ -78,14 +118,8 @@ def get_workplane_orientation(n : np.array, p : list) -> list:
     # quaternion for the alignment of xy-planes 
     q1 = quaternion_from_axis_angle(r_axis, r_angle)
 
-    # for clarity, define components
-    [x,y,z,w] = q1
-    
     # y unit vector of the 1st rotation 
-    y_unit = np.array([2*(x*y-z*w),
-                       1-2*(x**2+z**2),
-                       2*(y*z+x*w)])       
-    y_unit = normalize(y_unit)
+    y_unit = get_y_unit_vector(q1)
 
     # y unit vector on wanted coordinate system
     d2 = np.array(p[1]) - np.array(p[0])
@@ -136,15 +170,9 @@ def get_corner_quaternions(n : np.array, p : list) -> list:
 
     # quaternion for the alignment of xy-planes 
     q1 = quaternion_from_axis_angle(r_axis, r_angle)
-
-    # for clarity, define components
-    [x,y,z,w] = q1
     
     # y unit vector of the 1st rotation 
-    y_unit = np.array([2*(x*y-z*w),
-                       1-2*(x**2+z**2),
-                       2*(y*z+x*w)])       
-    y_unit = normalize(y_unit)
+    y_unit = get_y_unit_vector(q1)
 
     corner_quaternions = []
 
