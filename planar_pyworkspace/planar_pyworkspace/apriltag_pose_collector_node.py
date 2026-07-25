@@ -8,20 +8,22 @@ from tf2_ros import TransformBroadcaster, TransformException
 from tf2_ros.buffer import Buffer 
 from tf2_ros.transform_listener import TransformListener
 from .utils.quaternion_utils import quaternion_from_axis_angle, \
-                                    combine_quaternions
+                                    combine_quaternions, get_x_unit_vector, \
+                                    get_y_unit_vector
 
 from .utils.file_utils import generate_csv
 from .constants import (
     CAMERA_TF_FRAME,
     APRILTAG_CORNERS_CSV_FILE,
     DEFAULT_PATH,
+    CORNER_MARKER_SIZE
 )
 
 ATTEMPTS = 15
 DEBUG_ENABLED = True
 
 # TODO: make corners configurable to user
-CORNERS = {'bl':0.0, 'tl': -90.0, 'tr':-180.0, 'br':90.0}
+CORNERS = {'tl': -90.0, 'tr':-180.0, 'br':90.0, 'bl':0.0}
 
 class AprilTagPoseCollector(Node):
     """
@@ -30,8 +32,9 @@ class AprilTagPoseCollector(Node):
 
     def __init__(self,
                  corner_frame_id : str,
-                 camera_frame_id : str="st_cam_color_optical_frame", 
-                 rot_about_z : float = 0.0,  
+                 camera_frame_id : str="st_cam_color_optical_frame",
+                 origo_offset : list[float] = [-CORNER_MARKER_SIZE/2, -CORNER_MARKER_SIZE/2],
+                 rot_about_z : float = 0.0,
                  no_of_samples : int = 20, 
                  enable_debug_visualization : bool = False):
         """
@@ -53,6 +56,7 @@ class AprilTagPoseCollector(Node):
         self._camera_frame = camera_frame_id
         
         self._corner_frame = corner_frame_id
+        self._origo_offset = origo_offset
         self._rot_about_z = rot_about_z
         self._poses = []
         self._no_of_samples = no_of_samples
@@ -88,7 +92,8 @@ class AprilTagPoseCollector(Node):
         try: 
             # transformation from corner to camera 
             t = self.tf_buffer.lookup_transform(self._camera_frame, 
-                                                self._corner_frame, rclpy.time.Time())
+                                                self._corner_frame, 
+                                                rclpy.time.Time())
             # create a new sibling transformation 
             t.header.frame_id = self._camera_frame
             t.child_frame_id = self._corner_frame + '_rotated'
@@ -98,7 +103,7 @@ class AprilTagPoseCollector(Node):
             z = t.transform.rotation.z
             w = t.transform.rotation.w
             
-            # only rotation is corrected about plane z-axis 
+            # rotation is corrected about plane z-axis 
             new_q = quaternion_from_axis_angle(np.array([0.0,0.0,1.0]), 
                                             np.radians(self._rot_about_z))
             new_q = combine_quaternions([x,y,z,w], new_q)
@@ -108,6 +113,12 @@ class AprilTagPoseCollector(Node):
             t.transform.rotation.z = new_q[2]
             t.transform.rotation.w = new_q[3]
 
+            # move the origo by offset 
+            x_unit = get_x_unit_vector(new_q) * self._origo_offset[0]
+            y_unit = get_y_unit_vector(new_q) * self._origo_offset[1]
+            t.transform.translation.x += x_unit[0] + y_unit[0]
+            t.transform.translation.y += x_unit[1] + y_unit[1]
+            t.transform.translation.z += x_unit[2] + y_unit[2]
 
             self._poses.append([t.transform.translation.x,
                                 t.transform.translation.y,
@@ -192,7 +203,6 @@ def main(args=None):
     logger.info('Collecting AprilTag pose samples')
 
     marker_poses = []
-    collector = AprilTagPoseCollector('')
 
     for id, rot in CORNERS.items():
         apriltag_corner_collector = AprilTagPoseCollector(id,
