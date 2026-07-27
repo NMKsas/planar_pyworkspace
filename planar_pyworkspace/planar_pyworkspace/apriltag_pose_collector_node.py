@@ -105,7 +105,7 @@ class AprilTagPoseCollector(Node):
             
             # rotation is corrected about plane z-axis 
             new_q = quaternion_from_axis_angle(np.array([0.0,0.0,1.0]), 
-                                            np.radians(self._rot_about_z))
+                                               np.radians(self._rot_about_z))
             new_q = combine_quaternions([x,y,z,w], new_q)
 
             t.transform.rotation.x = new_q[0]
