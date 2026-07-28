@@ -2,9 +2,13 @@ from launch import LaunchDescription
 from launch.actions import Shutdown
 from launch_ros.actions import Node
 
-from planar_pyworkspace.constants import MARKERS, CORNER_MARKER_SIZE, \
-                                         CAMERA_RGB_TOPIC, CAMERA_INFO_TOPIC, \
-                                         APRILTAG_FAMILY
+from planar_pyworkspace.constants import (
+    MARKERS,
+    CORNER_MARKER_SIZE,
+    CAMERA_RGB_TOPIC,
+    CAMERA_INFO_TOPIC,
+    APRILTAG_FAMILY,
+)
 
 def generate_launch_description():
     """
