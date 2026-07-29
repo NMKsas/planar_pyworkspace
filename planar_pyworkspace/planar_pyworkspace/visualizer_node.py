@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Workplane visualizer 
-
-from cv_bridge import CvBridge
+from sensor_msgs.msg import Image
+import numpy as np
 import rclpy
 from rclpy.node import Node 
 from sensor_msgs.msg import Image as ROS_Image
@@ -33,7 +33,6 @@ class WorkplaneVisualizer():
         # corresponding node class
         self._node = node 
         self._rgb_topic = rgb_topic
-        self._bridge = CvBridge() 
 
         # unregister the subscriber
         self._ptp_interface = ptp_interface
@@ -72,12 +71,24 @@ class WorkplaneVisualizer():
         """
         Callback for the regular image. The images are saved in cv2 format. 
         """
+        img = np.frombuffer(
+            image_data.data,
+            dtype=np.uint8
+        ).reshape(image_data.height, image_data.width, 3)
+
+        out = self._pipeline.push(img)
+
         self._rgb_pub.publish(
-            self._bridge.cv2_to_imgmsg(
-                self._pipeline.push(
-                    self._bridge.imgmsg_to_cv2(image_data, image_data.encoding)
-                )
-            , encoding="rgb8"))
+            Image(
+                header=image_data.header,
+                height=out.shape[0],
+                width=out.shape[1],
+                encoding="rgb8",
+                is_bigendian=0,
+                step=out.shape[1] * 3,
+                data=out.tobytes(),
+            )
+        )
 
 
 def main(args=None):

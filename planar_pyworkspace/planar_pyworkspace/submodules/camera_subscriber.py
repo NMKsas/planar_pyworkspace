@@ -2,7 +2,6 @@
 # Camera subscriber for RGB and Depth streams. Currently supports Intel 
 # RealSense D400 cameras, which include aligned_depth_to_color stream. 
 
-from cv_bridge import CvBridge
 import numpy as np 
 import pyrealsense2 as rs2
 import rclpy
@@ -46,8 +45,6 @@ class CameraSubscriber():
         self._depth_in = None 
         self._camera_intrinsics = None 
 
-        self._bridge = CvBridge() 
-
         self._lock_rgb = threading.Lock() 
         self._lock_depth = threading.Lock()
         self._lock_intrinsics = threading.Lock()
@@ -76,12 +73,19 @@ class CameraSubscriber():
         """
         Callback for the regular image. The images are saved in cv2 format. 
         """
-        with self._lock_rgb: 
-            self._rgb_in = self._bridge.imgmsg_to_cv2(image_data, 
-                                                      desired_encoding="bgr8")
-        with self._lock_depth: 
-            self._depth_in = self._bridge.imgmsg_to_cv2(depth_data, 
-                                                        depth_data.encoding)
+        with self._lock_rgb:
+            self._rgb_in = np.frombuffer(image_data.data, dtype=np.uint8) \
+                             .reshape(image_data.height, image_data.width, 3)
+
+        with self._lock_depth:
+            dtype = {
+                "16UC1": np.uint16,
+                "32FC1": np.float32,
+            }[depth_data.encoding]
+
+            self._depth_in = np.frombuffer(depth_data.data, dtype=dtype) \
+                               .reshape(depth_data.height, depth_data.width)
+
     def get_depth(self) -> np.ndarray:
         """
         Return the current depth frame
